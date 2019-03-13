@@ -8,23 +8,6 @@
  * Author URI:  https://serkanboztepe.com
  */
 
-    function boztepe_contact_form()
-    {
-        $content = '';
-
-        $content .= '<p class="serkan">Serkan</p>';
-        $content .= '<form method="POST" action="/wordpress">';
-        $content .= '<input type="text" name="full_name" placeholder="Ad Soyad"/><br/>';
-        $content .= '<input type="text" name="email_address" placeholder="Email Adresiniz"/><br/>';
-        $content .= '<input type="text" name="phone_number" placeholder="Telefon Numaranız"/><br/>';
-        $content .= '<textarea name="comments" placeholder="Yorumlarınız ..."></textarea><br/>';
-        $content .= '<input name="submit" type="submit" id="submit" class="btn btn-success" value="Yorum gönder">';
-        $content .= '</form>';
-
-        return $content;
-    }
-    add_shortcode('boztepe-contact-form','boztepe_contact_form');
-
     function boztepe_admin_menu_option()
     {
         add_menu_page('Header & Footer Scripts','Site Scripts','manage_options','boztepe_admin_menu','boztepe_scripts_page','',200);
@@ -42,7 +25,7 @@
             ?>
                 <div id="setting-error-settings-updated" class="updated_settings_error notice is-dismissible">
                     <strong>
-                        Settings have been saved
+                        Ayarlar kaydedildi.
                     </strong>
                 </div>
             <?php
@@ -53,7 +36,7 @@
 
         ?>
             <div class="wrap">
-                <h1><strong>Update Scripts</strong></h1>
+                <h1><strong>Script Güncelle</strong></h1>
                 <form action="" method="post">
                     <label for="header_scripts">Header Scripts</label>
                     <textarea name="header_scripts" class="large-text" rows="10"><?php print $header_scripts; ?></textarea>
@@ -67,10 +50,8 @@
 
     function boztepe_display_header_scripts()
     {
-        $header_scripts = '<style type="text/css">';
         $header_scripts .= get_option('boztepe_header_scripts','none');
-        $header_scripts .= '</style>';
-
+        
         print $header_scripts;
     }
     add_action('wp_head','boztepe_display_header_scripts');
@@ -84,3 +65,68 @@
     add_action('wp_footer','boztepe_display_footer_scripts');
 
 
+    function boztepe_contact_form()
+    {
+        $content = '';
+
+        $content .= '<form method="POST" action="/wordpress/tesekkurler">';
+        $content .= '<input type="text" name="full_name" placeholder="Ad Soyad" />';
+        $content .= '<br />';
+        $content .= '<br />';
+        $content .= '<input type="text" name="email_address" placeholder="Email Adresiniz" />';
+        $content .= '<br />';
+        $content .= '<br />';
+        $content .= '<input type="text" name="phone_number" placeholder="Telefon Numaranız" />';
+        $content .= '<br />';
+        $content .= '<br />';
+        $content .= '<textarea name="comments" placeholder="Yorumlarınız ..."></textarea>';
+        $content .= '<br />';
+        $content .= '<br />';
+        $content .= '<input name="submit_boztepe_contact_form" type="submit" id="submit" class="btn btn-success" value="Yorum gönder">';
+        $content .= '</form>';
+
+        return $content;
+    }
+    add_shortcode('boztepe_contact_form','boztepe_contact_form');
+
+    function set_html_content_type()
+    {
+        return 'text/html';
+    }
+
+    function boztepe_contact_form_capture()
+    {
+        global $post,$wpdb;
+
+        if(array_key_exists('submit_boztepe_contact_form',$_POST))
+        {
+            $to = "serkanboztepe02@gmail.com";
+            $subject = "Boztepe Contact Form";
+            $body = '';
+
+            $body .= 'Ad Soyad: '.$_POST['full_name']." <br /> ";
+            $body .= 'Email: '.$_POST['email_address']." <br /> ";
+            $body .= 'Telefon : '.$_POST['phone_number']." <br /> ";
+            $body .= 'Yorumlar : '.$_POST['comments']." <br /> ";
+
+            /* add_filter('wp_mail_content_type','set_html_content_type');
+            wp_mail($to,$subject,$body);
+            remove_filter('wp_mail_content_type','set_html_content_type'); */
+
+            /* $time = current_time('mysql');
+
+            $data = array(
+                'comment_post_ID' => $post->ID,
+                'comment_content' => $body,
+                'comment_author_IP' => $_SERVER["REMOTE_ADDR"],
+                'comment_date' => $time,
+                'comment_approved' => 1,
+            );
+
+            wp_insert_comment($data); */
+
+            $insertData = $wpdb->get_results(" INSERT INTO ".$wpdb->prefix."form_submission (data) VALUES ('".$body."') ");
+
+        }
+    }
+    add_action('wp_head','boztepe_contact_form_capture');
