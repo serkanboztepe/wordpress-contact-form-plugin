@@ -109,11 +109,11 @@
             $body .= 'Telefon : '.$_POST['phone_number']." <br /> ";
             $body .= 'Yorumlar : '.$_POST['comments']." <br /> ";
 
-            /* add_filter('wp_mail_content_type','set_html_content_type');
+            add_filter('wp_mail_content_type','set_html_content_type');
             wp_mail($to,$subject,$body);
             remove_filter('wp_mail_content_type','set_html_content_type'); */
 
-            /* $time = current_time('mysql');
+            $time = current_time('mysql');
 
             $data = array(
                 'comment_post_ID' => $post->ID,
@@ -123,9 +123,9 @@
                 'comment_approved' => 1,
             );
 
-            wp_insert_comment($data); */
+            wp_insert_comment($data);
 
-            $insertData = $wpdb->get_results(" INSERT INTO ".$wpdb->prefix."form_submission (data) VALUES ('".$body."') ");
+            //$insertData = $wpdb->get_results(" INSERT INTO ".$wpdb->prefix."form_submission (data) VALUES ('".$body."') ");
 
         }
     }
